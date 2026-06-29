@@ -1,30 +1,22 @@
-import type { EntityExtractionResult } from "@/types/extracted";
+import type { RankedSource } from "@/types/search";
 
-function formatList(items: string[], emptyLabel: string): string {
-  if (items.length === 0) {
-    return emptyLabel;
-  }
-  return items.map((item, index) => `${index + 1}. ${item}`).join("\n");
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
-export function formatExtractionResult(result: EntityExtractionResult): string {
-  const { entities, queries } = result;
+export function formatSourcesResult(sources: RankedSource[]): string {
+  if (sources.length === 0) {
+    return "Не удалось найти надёжные источники.";
+  }
 
-  return [
-    "Анализ текста завершён.",
-    "",
-    "Ключевые утверждения:",
-    formatList(entities.claims, "— не выделены"),
-    "",
-    `Даты: ${entities.dates.length > 0 ? entities.dates.join(", ") : "—"}`,
-    `Числа: ${entities.numbers.length > 0 ? entities.numbers.join(", ") : "—"}`,
-    `Имена: ${entities.names.length > 0 ? entities.names.join(", ") : "—"}`,
-    `Ссылки: ${entities.links.length > 0 ? entities.links.join(", ") : "—"}`,
-    "",
-    "Поисковые запросы (для следующего этапа):",
-    `• основной: ${queries.primary}`,
-    ...(queries.secondary.length > 0
-      ? queries.secondary.map((query) => `• дополнительный: ${query}`)
-      : []),
-  ].join("\n");
+  const lines = sources.map((source, index) => {
+    const title = escapeHtml(source.title);
+    const reason = escapeHtml(source.reason);
+    return `${index + 1}. <a href="${source.url}">${title}</a> — ${source.confidence}%\n   ${reason}`;
+  });
+
+  return ["Возможные источники:", "", ...lines].join("\n");
 }

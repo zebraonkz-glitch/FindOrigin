@@ -1,3 +1,2 @@
-// Этап 4: поиск источников (Serper / Tavily и т.п.)
-
-export {};
+export { searchSources } from "@/lib/search/serper";
+export { classifyDomain, extractDomain } from "@/lib/search/classify";

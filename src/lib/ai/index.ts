@@ -1,3 +1,1 @@
-// Этап 5: семантическое сравнение через AI
-
-export {};
+export { rankSources } from "@/lib/ai/rank";

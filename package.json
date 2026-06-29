@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:bot": "node scripts/poll.mjs",
+    "webhook:set": "node scripts/set-webhook.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

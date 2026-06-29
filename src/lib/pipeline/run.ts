@@ -1,6 +1,8 @@
 import { extractEntities } from "@/lib/extract/entities";
 import { resolveInput } from "@/lib/extract/input";
-import { formatExtractionResult } from "@/lib/pipeline/format";
+import { rankSources } from "@/lib/ai/rank";
+import { formatSourcesResult } from "@/lib/pipeline/format";
+import { searchSources } from "@/lib/search/serper";
 import { sendMessage } from "@/lib/telegram/client";
 
 const PIPELINE_TIMEOUT_MS = 60_000;
@@ -46,6 +48,15 @@ async function runPipelineSteps(rawInput: string, chatId: number): Promise<void>
     return;
   }
 
-  const extraction = extractEntities(resolved.data.text);
-  await sendMessage(chatId, formatExtractionResult(extraction));
+  const { entities, queries } = extractEntities(resolved.data.text);
+
+  const candidates = await searchSources(queries.primary, queries.secondary);
+
+  if (candidates.length === 0) {
+    await sendMessage(chatId, "Не удалось найти надёжные источники.");
+    return;
+  }
+
+  const ranked = await rankSources(entities, candidates);
+  await sendMessage(chatId, formatSourcesResult(ranked), { parseMode: "HTML" });
 }

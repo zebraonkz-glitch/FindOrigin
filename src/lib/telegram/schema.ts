@@ -3,7 +3,8 @@ import { z } from "zod";
 const telegramUserSchema = z.object({
   id: z.number(),
   is_bot: z.boolean().optional(),
-  first_name: z.string(),
+  first_name: z.string().optional(),
+  username: z.string().optional(),
 });
 
 const telegramChatSchema = z.object({

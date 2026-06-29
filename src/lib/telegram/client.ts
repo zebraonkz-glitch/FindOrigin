@@ -13,6 +13,25 @@ export async function sendMessage(
   options: SendMessageOptions = {},
 ): Promise<void> {
   const token = getTelegramBotToken();
+
+  try {
+    await sendMessageRequest(token, chatId, text, options.parseMode);
+  } catch (error) {
+    if (options.parseMode) {
+      console.warn("[telegram] HTML send failed, retrying as plain text", error);
+      await sendMessageRequest(token, chatId, text);
+      return;
+    }
+    throw error;
+  }
+}
+
+async function sendMessageRequest(
+  token: string,
+  chatId: number,
+  text: string,
+  parseMode?: SendMessageOptions["parseMode"],
+): Promise<void> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
@@ -23,7 +42,7 @@ export async function sendMessage(
       body: JSON.stringify({
         chat_id: chatId,
         text,
-        parse_mode: options.parseMode,
+        ...(parseMode ? { parse_mode: parseMode } : {}),
       }),
       signal: controller.signal,
     });
