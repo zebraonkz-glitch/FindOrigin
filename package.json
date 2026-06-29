@@ -6,6 +6,7 @@
     "dev": "next dev",
     "dev:bot": "node scripts/poll.mjs",
     "webhook:set": "node scripts/set-webhook.mjs",
+    "menu:set": "node scripts/set-menu-button.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

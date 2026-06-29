@@ -1,0 +1,25 @@
+.tmaRoot {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--tma-bg);
+  color: var(--tma-text);
+}
+
+.tmaRoot {
+  --tma-bg: var(--tg-theme-bg-color, #ffffff);
+  --tma-text: var(--tg-theme-text-color, #1a1a1a);
+  --tma-hint: var(--tg-theme-hint-color, #8e8e93);
+  --tma-link: var(--tg-theme-link-color, #2481cc);
+  --tma-button: var(--tg-theme-button-color, #2481cc);
+  --tma-button-text: var(--tg-theme-button-text-color, #ffffff);
+  --tma-secondary-bg: var(--tg-theme-secondary-bg-color, #f2f2f7);
+  --tma-border: color-mix(in srgb, var(--tma-hint) 25%, transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+  .tmaRoot:not([data-theme]) {
+    --tma-bg: var(--tg-theme-bg-color, #1c1c1e);
+    --tma-text: var(--tg-theme-text-color, #ffffff);
+    --tma-secondary-bg: var(--tg-theme-secondary-bg-color, #2c2c2e);
+  }
+}

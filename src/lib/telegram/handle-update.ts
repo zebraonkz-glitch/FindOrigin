@@ -3,6 +3,7 @@ import { getTelegramWebhookSecret } from "@/lib/env";
 import { runFindOriginPipeline } from "@/lib/pipeline/run";
 import { sendMessage } from "@/lib/telegram/client";
 import { parseTelegramUpdate } from "@/lib/telegram/parse";
+import { sendStartMessage } from "@/lib/telegram/start";
 
 const ACK_MESSAGE = "Принято. Ищу возможные источники…";
 const NON_TEXT_MESSAGE =
@@ -40,6 +41,11 @@ export async function handleTelegramUpdate(body: unknown): Promise<void> {
 
   if (!text) {
     await sendMessage(chatId, NON_TEXT_MESSAGE);
+    return;
+  }
+
+  if (text === "/start" || text.startsWith("/start ")) {
+    await sendStartMessage(chatId);
     return;
   }
 

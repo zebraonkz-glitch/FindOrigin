@@ -62,4 +62,18 @@ export function getOpenAiModel(): string {
   return optionalEnv("OPENAI_MODEL") ?? "openai/gpt-4o-mini";
 }
 
+export function getMiniAppUrl(): string {
+  const explicit = optionalEnv("MINI_APP_URL");
+  if (explicit) {
+    return explicit.replace(/\/$/, "");
+  }
+
+  const webhook = optionalEnv("WEBHOOK_URL");
+  if (webhook) {
+    return webhook.replace(/\/api\/webhook\/?$/, "");
+  }
+
+  return "https://find-origin-one.vercel.app";
+}
+
 export const MIN_INPUT_TEXT_LENGTH = 10;
