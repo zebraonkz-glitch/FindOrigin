@@ -1,9 +1,21 @@
+function stripEnvValue(value: string): string {
+  return value.trim().replace(/^["']|["']$/g, "");
+}
+
 function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
+  const raw = process.env[name];
+  if (!raw) {
     throw new Error(`Переменная окружения ${name} не задана`);
   }
-  return value;
+  return stripEnvValue(raw);
+}
+
+function optionalEnv(name: string): string | undefined {
+  const raw = process.env[name];
+  if (!raw) {
+    return undefined;
+  }
+  return stripEnvValue(raw);
 }
 
 export function getTelegramBotToken(): string {
@@ -11,31 +23,43 @@ export function getTelegramBotToken(): string {
 }
 
 export function getTelegramWebhookSecret(): string | undefined {
-  return process.env.TELEGRAM_WEBHOOK_SECRET;
+  return optionalEnv("TELEGRAM_WEBHOOK_SECRET");
 }
 
 export function getOpenAiApiKey(): string {
-  const key = process.env.OPENAI_API_KEY ?? process.env.OPENROUTER_API_KEY;
+  const key = optionalEnv("OPENAI_API_KEY") ?? optionalEnv("OPENROUTER_API_KEY");
   if (key) {
     return key;
   }
   return requireEnv("OPENAI_API_KEY");
 }
 
-export function getSearchApiKey(): string {
-  const key = process.env.SEARCH_API_KEY ?? process.env.SERPER_API_KEY;
-  if (key) {
-    return key;
-  }
-  return requireEnv("SEARCH_API_KEY");
+export function getSearchApiKey(): string | undefined {
+  return optionalEnv("SEARCH_API_KEY") ?? optionalEnv("SERPER_API_KEY");
+}
+
+export function getGoogleSearchApiKey(): string | undefined {
+  return optionalEnv("GOOGLE_SEARCH_API_KEY");
+}
+
+export function getGoogleSearchEngineId(): string | undefined {
+  return optionalEnv("GOOGLE_SEARCH_ENGINE_ID");
+}
+
+export function hasSerperSearch(): boolean {
+  return Boolean(getSearchApiKey());
+}
+
+export function hasGoogleSearch(): boolean {
+  return Boolean(getGoogleSearchApiKey() && getGoogleSearchEngineId());
 }
 
 export function getOpenAiBaseUrl(): string {
-  return process.env.OPENAI_BASE_URL ?? "https://openrouter.ai/api/v1";
+  return optionalEnv("OPENAI_BASE_URL") ?? "https://openrouter.ai/api/v1";
 }
 
 export function getOpenAiModel(): string {
-  return process.env.OPENAI_MODEL ?? "openai/gpt-4o-mini";
+  return optionalEnv("OPENAI_MODEL") ?? "openai/gpt-4o-mini";
 }
 
 export const MIN_INPUT_TEXT_LENGTH = 10;

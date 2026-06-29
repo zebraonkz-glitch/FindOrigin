@@ -4,6 +4,7 @@ import {
 } from "@/lib/telegram/handle-update";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 export async function POST(request: Request) {
   if (!verifyWebhookSecret(request)) {

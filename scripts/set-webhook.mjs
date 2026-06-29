@@ -37,9 +37,40 @@ if (!token) {
 }
 
 if (!webhookUrl) {
-  console.error("Укажите URL: node scripts/set-webhook.mjs https://your-app.vercel.app/api/webhook");
+  console.error(
+    "Укажите URL: node scripts/set-webhook.mjs https://find-origin.vercel.app/api/webhook",
+  );
   process.exit(1);
 }
+
+if (webhookUrl.includes("-projects.vercel.app")) {
+  console.error(
+    "Ошибка: это preview-URL Vercel (защищён, Telegram получит 302/404).",
+  );
+  console.error("Используйте production-домен, например: https://find-origin.vercel.app/api/webhook");
+  process.exit(1);
+}
+
+async function checkWebhookReachable(url) {
+  try {
+    const response = await fetch(url, { method: "GET", redirect: "manual" });
+    if (response.status >= 300 && response.status < 400) {
+      throw new Error(`редирект ${response.status} — URL недоступен для Telegram`);
+    }
+    if (response.status === 404) {
+      throw new Error("404 Not Found — проверьте деплой и путь /api/webhook");
+    }
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    console.log("[check] GET", url, "→", response.status);
+  } catch (error) {
+    console.error("[check] webhook недоступен:", error.message ?? error);
+    process.exit(1);
+  }
+}
+
+await checkWebhookReachable(webhookUrl);
 
 const body = new URLSearchParams({ url: webhookUrl });
 if (secret) {
